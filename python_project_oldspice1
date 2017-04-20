@@ -1,0 +1,248 @@
+import urllib2
+import argparse
+
+#this will ask the gender or what they sexually identify as
+def ask_gender():
+
+    gender = ""
+
+    while gender.lower() not in ['m', 'f', 'male', 'female']:
+        gender = raw_input("What gender would you like (M/F): ")
+
+    return gender.lower()
+#this will ask the user for their phone number and clean it so they can write it however way they like
+def ask_phone():
+
+    phone = ""
+    clean_phone = ""
+
+    while len(clean_phone) != 10:
+        phone = raw_input("What is your phone number: ")
+
+        for character in phone:
+            if character.isdigit():
+                clean_phone += character
+
+        if len(clean_phone) != 10:
+            clean_phone = ""
+
+    return clean_phone
+
+#depending on male/female print out and get reasons from them
+def ask_reason(gender):
+    freason = ["f-r1-ingesting_old_spice", "f-r2-listening_to_reading", "f-r3-lobster_dinner", "f-r4-moon_kiss", "f-r5-riding_a_horse"]
+    mreason = ["m-r1-building", "m-r2-cracking_walnuts", "m-r3-polishing_monocole", "m-r4-ripping_weights"]
+    reason = ""
+    #let's figure out if it is male/female
+    if gender in ['f', 'female']:
+        while reason not in ['1', '2', '3', '4', '5']:
+            print("Please select your reason...")
+            print("1) Ingesting Old Spice")
+            print("2) Listening to Reading")
+            print("3) Lobster Dinner")
+            print("4) Moon Kiss")
+            print("5) Riding a Horse")
+
+
+            reason = raw_input("Please make your selection: ")
+        return freason[(int(reason)-1)] #since we're using an array and a string, converts to int and subtracts 1 because counting starts from 0
+    else:
+        while reason not in ['1', '2', '3', '4']:
+            print("Please select your reason...")
+            print("1) Building an Orphanage")
+            print("2) Cracking Walnuts")
+            print("3) Polishing Monocle")
+            print("4) Ripping Weights")
+
+            reason = raw_input("Please make your selection: ")
+        return mreason[(int(reason)-1)] #does the same thing as the female reason
+
+    return reason
+
+#depending on male/female get the ending they want
+def ask_ending(gender):
+    fend = ["f-e1-she_will_get_back_to_you" , "f-e2-thanks_for_calling"]
+    mend = ["m-e1-horse", "m-e2-jingle", "m-e3-on_phone" , "m-e4-swan_dive" , "m-e5-voicemail"]
+    ending = ""
+    if gender in ['f', 'female']:
+        while ending not in ['1', '2']:
+            print("Please select your ending...")
+            print("1) Get Back to You")
+            print("2) Thanks for Calling")
+
+            ending = raw_input("Please make your selection: ")
+        return fend[(int(ending)-1)]
+    else:
+        while ending not in ['1', '2', '3', '4', '5']:
+            print("Please select your ending...")
+            print("1) Horse")
+            print("2) Jingle")
+            print("3) Phone")
+            print("4) Swan Dive")
+            print("5) Voicemail")
+
+            ending = raw_input("Please make your selection: ")
+        return mend[(int(ending)-1)]
+
+#validates the gender for command line arguments
+def valid_gender(gender):
+    return gender in ['m', 'male', 'f', 'female']
+
+#validates the phone for command line arguments
+def valid_phone(phone):
+    #let's clean the input for phone
+    if phone:
+        clean_phone = ""
+        for character in phone:
+            if character.isdigit():
+                clean_phone += character
+        if len(clean_phone) == 10:
+            return clean_phone
+        else:
+            return False
+    else:
+        return False
+
+#validates the reasons for command line arguments
+def valid_reason(gender, reason):
+    if gender in ['f', 'female']:
+        return reason in ['1', '2', '3', '4', '5']
+    else:
+        return reason in ['1', '2', '3', '4']
+
+#validates the ending for command line arguments
+def valid_ending(gender, ending):
+    if gender in ['f', 'female']:
+        return ending in ['1', '2']
+    else:
+        return ending in ['1', '2', '3', '4', '5']
+
+#confirms user inputs and choices when they run the program
+def get_confirm():
+    confirm = ""
+    while confirm.lower() not in ['y', 'n']:
+        confirm = raw_input("Please confirm (Y,N): ")
+    return confirm
+
+def get_reason(gender, option):
+    freason = ['f-r1-ingesting_old_spice', 'f-r2-listening_to_reading', "f-r3-lobster_dinner", "f-r4-moon_kiss", "f-r5-riding_a_horse"]
+    mreason = ['m-r1-building', "m-r2-cracking_walnuts", "m-r3-polishing_monocole", "m-r4-ripping_weights"]
+    if gender in ['f', 'female']:
+        return freason[(int(option)-1)]
+    else:
+        return mreason[(int(option)-1)]
+
+def get_ending(gender, option):
+    fend = ['f-e1-she_will_get_back_to_you', 'f-e2-thanks_for_calling']
+    mend = ['m-e1-hourse', 'm-e2-jingle', 'm-e3-on_phone', 'm-e4-swan_dive', 'm-e5-voicemail']
+    if gender in ['f', 'female']:
+        return fend[(int(option)-1)]
+    else:
+        return mend[(int(option)-1)]
+
+#writes the mp3 and the txt file
+def get_mp3s(gender, phone, reason, ending, output):
+
+    server = "http://www-bcf.usc.edu/~chiso/itp125/project_version_1/"
+
+    #open the file to write in binary mode
+    final_mp3 = open(output + ".mp3", "wb")
+    final_txt = open(output + ".txt", "w")
+
+    if gender in ['f', 'female']:
+        final_mp3.write(urllib2.urlopen(server + 'f-b1-hello_caller.mp3').read())
+        final_txt.write("f-b1-hello_caller.mp3\n")
+        final_mp3.write(urllib2.urlopen(server + 'f-b2-lady_at.mp3').read())
+        final_txt.write("f-b2-lady_at.mp3\n")
+    else:
+        final_mp3.write(urllib2.urlopen(server + 'm-b1-hello.mp3').read())
+        final_txt.write("m-b1-hello.mp3\n")
+        final_mp3.write(urllib2.urlopen(server + 'm-b2-have_dialed.mp3').read())
+        final_txt.write("m-b2-have_dialed.mp3\n")
+    for digit in phone:
+        final_mp3.write(urllib2.urlopen(server + digit + ".mp3").read())
+        final_txt.write(digit + ".mp3\n")
+    if gender in ['f', 'female']:
+        final_mp3.write(urllib2.urlopen(server + 'f-r0.2-she_is_busy.mp3').read())
+        final_txt.write("f-r0.2-she_is_busy.mp3\n")
+    else:
+        final_mp3.write(urllib2.urlopen(server + 'm-r0-cannot_come_to_phone.mp3').read())
+        final_txt.write("m-r0-cannot_come_to_phone.mp3\n")
+    final_mp3.write(urllib2.urlopen(server + reason + ".mp3").read())
+    final_txt.write(reason + "\n")
+
+    if gender in ['m', 'male']:
+        final_mp3.write(urllib2.urlopen(server + 'm-leave_a_message.mp3').read())
+        final_txt.write("m-leave_a_message.mp3\n")
+    final_mp3.write(urllib2.urlopen(server + ending + ".mp3").read())
+    final_txt.write(ending + "\n")
+
+    #Chi said always close your files
+    final_mp3.close()
+    final_txt.close()
+
+
+#this is where the program will start
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description = 'Handle Command Line Arguments')
+
+    parser.add_argument("-g")
+    parser.add_argument("-n")
+    parser.add_argument("-r")
+    parser.add_argument("-e")
+    parser.add_argument("-o")
+
+    args = parser.parse_args()
+
+#prints out user arguments if they use command line so they can see their choices
+    print args.g
+    print args.n
+    print args.r
+    print args.e
+    print args.o
+
+#prints out whether the command line arguments are valid; if all are valid then the program splices the mp3 immediately
+    print valid_gender(args.g)
+    print valid_phone(args.n)
+    print valid_reason(args.g, args.r)
+    print valid_ending(args.g, args.e)
+
+    cmdline = False
+    confirm = 'n'
+    while confirm.lower() in ['n']:
+        #gender
+        if valid_gender(args.g):
+            gender = args.g
+        else:
+            gender = ask_gender()
+        #phone
+        if valid_phone(args.n):
+            phone = valid_phone(args.n)
+        else:
+            phone = ask_phone()
+        #reason
+        if valid_reason(gender, args.r):
+            reason = get_reason(gender, args.e)
+        else:
+            reason = ask_reason(gender)
+        #ending
+        if valid_ending(gender, args.e):
+            ending = get_ending(gender, args.e)
+        else:
+            ending = ask_ending(gender)
+        #autoconfirm
+        if valid_gender(args.g) and valid_phone(args.n) and valid_reason(gender, args.r) and valid_ending(gender, args.e) and args.o:
+            output = args.o
+            cmdline = True
+            break
+        #confirming
+        print("Gender: " + gender)
+        print("Phone: " + phone)
+        print("Reason: " + reason)
+        print("Ending: " + ending)
+        confirm = get_confirm()
+
+    if cmdline == False:
+        output = raw_input("Enter a filename for the voicemail: ")
+
+    get_mp3s(gender, phone, reason, ending, output)
